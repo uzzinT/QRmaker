@@ -1,98 +1,229 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QRmaker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR 메이커</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  :root {
-    --brand: #0f6cbd; --brand-hover: #115ea3; --brand-press: #0c3b5e;
-    --bg: #f5f5f5; --card: #ffffff; --text: #242424; --sub: #616161;
-    --stroke: #d1d1d1; --stroke-strong: #616161;
+  :root{
+    --ink:#12130f;
+    --paper:#eef0e6;
+    --panel:#ffffff;
+    --accent:#3f6b3f;
+    --accent-soft:#dbe6d3;
+    --mono:'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --sans:'IBM Plex Sans KR', -apple-system, 'Segoe UI', sans-serif;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif; font-size: 14px;
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    color:var(--ink);
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:48px 20px 80px;
+    background-color:var(--paper);
+    background-image:
+      linear-gradient(var(--ink) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
   }
-  header {
-    height: 48px; background: var(--brand); color: #fff;
-    display: flex; align-items: center; gap: 10px; padding: 0 20px;
-    font-size: 16px; font-weight: 600;
+  .wrap{ width:100%; max-width:640px; }
+
+  header{
+    background:var(--panel);
+    border:1.5px solid var(--ink);
+    border-radius:18px;
+    padding:24px 26px;
+    box-shadow:6px 6px 0 var(--ink);
   }
-  header svg { width: 20px; height: 20px; }
-  main { max-width: 760px; margin: 32px auto; padding: 0 16px; }
-  .card {
-    background: var(--card); border-radius: 8px; padding: 24px;
-    box-shadow: 0 0 2px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.14);
-    display: grid; grid-template-columns: 1fr 280px; gap: 32px;
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--accent); display:flex; align-items:center; gap:8px; margin-bottom:10px;
   }
-  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
-  .desc { margin: 0 0 20px; color: var(--sub); }
-  label { display: block; font-weight: 600; margin-bottom: 6px; }
-  input {
-    width: 100%; height: 32px; padding: 0 10px; font: inherit; color: inherit;
-    border: 1px solid var(--stroke); border-bottom-color: var(--stroke-strong); border-radius: 4px;
-    outline: none;
+  .eyebrow::before{ content:""; width:7px; height:7px; background:var(--accent); }
+  h1{ font-size:34px; line-height:1.15; margin:0 0 10px; font-weight:700; letter-spacing:-0.01em; }
+  header p{ margin:0; color:#4a4c42; font-size:15px; line-height:1.6; }
+  kbd{
+    font-family:var(--mono); background:var(--ink); color:var(--paper);
+    padding:2px 7px; font-size:12px; border-radius:3px;
   }
-  input:focus { border-bottom: 2px solid var(--brand); }
-  .actions { display: flex; gap: 8px; margin-top: 16px; }
-  .btn {
-    height: 32px; padding: 0 16px; border-radius: 4px; font: inherit; font-weight: 600;
-    display: inline-flex; align-items: center; cursor: pointer; text-decoration: none;
+
+  .zone{
+    margin-top:28px;
+    background:var(--panel);
+    border:1.5px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
   }
-  .btn-primary { background: var(--brand); color: #fff; border: 1px solid transparent; }
-  .btn-primary:hover { background: var(--brand-hover); }
-  .btn-primary:active { background: var(--brand-press); }
-  .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--stroke); }
-  .btn-secondary:hover { background: #f5f5f5; border-color: #c7c7c7; }
-  .btn[hidden] { display: none; }
-  .preview {
-    border: 1px solid #e0e0e0; border-radius: 4px; background: #fafafa;
-    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    color: #9e9e9e; text-align: center; padding: 16px;
+  .input-row{ padding:22px 24px; border-bottom:1.5px solid var(--ink); }
+  label{
+    display:block; font-family:var(--mono); font-size:11px; letter-spacing:0.12em;
+    text-transform:uppercase; color:#6b6d61; margin-bottom:8px;
   }
-  #qr img, #qr canvas { width: 100%; height: auto; display: block; }
-  footer { text-align: center; color: var(--sub); font-size: 12px; margin-top: 16px; }
-  @media (max-width: 600px) { .card { grid-template-columns: 1fr; } }
+  .field{ display:flex; gap:10px; }
+  input{
+    flex:1; min-width:0; font-family:var(--mono); font-size:14px; color:var(--ink);
+    border:1.5px solid var(--ink); background:var(--panel); padding:11px 14px; outline:none;
+  }
+  input:focus{ background:var(--accent-soft); }
+
+  .action-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:13px; font-weight:500; letter-spacing:0.02em;
+    background:var(--panel); color:var(--ink);
+    border:1.5px solid var(--ink); padding:11px 18px; cursor:pointer; white-space:nowrap;
+    box-shadow:3px 3px 0 var(--ink);
+    transition:transform .08s, box-shadow .08s, background .12s;
+  }
+  .action-btn:hover{ background:var(--accent-soft); }
+  .action-btn:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+  .action-btn:focus-visible, input:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+
+  .stage{ position:relative; padding:48px 24px; text-align:center; }
+  .corner{ position:absolute; width:22px; height:22px; border:3px solid var(--ink); }
+  .corner.tl{ top:14px; left:14px; border-right:none; border-bottom:none; }
+  .corner.tr{ top:14px; right:14px; border-left:none; border-bottom:none; }
+  .corner.bl{ bottom:14px; left:14px; border-right:none; border-top:none; }
+  .corner.br{ bottom:14px; right:14px; border-left:none; border-top:none; }
+
+  .zone-icon{
+    width:46px; height:46px; margin:0 auto 18px;
+    display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,1fr); gap:3px;
+  }
+  .zone-icon i{ background:var(--ink); display:block; }
+  .zone-icon i:nth-child(2),.zone-icon i:nth-child(5),.zone-icon i:nth-child(8),
+  .zone-icon i:nth-child(10),.zone-icon i:nth-child(13),.zone-icon i:nth-child(16){ background:transparent; }
+  .zone-title{ font-size:17px; font-weight:600; margin-bottom:6px; }
+  .zone-sub{ font-size:13px; color:#6b6d61; }
+
+  #qr{ width:240px; max-width:100%; margin:0 auto; padding:12px; border:1.5px solid var(--ink); background:#fff; }
+  #qr img, #qr canvas{ width:100%; height:auto; display:block; }
+  .done #empty, #qr{ display:none; }
+  .done #qr{ display:block; }
+
+  .result{ display:none; margin-top:20px; background:var(--ink); color:var(--paper); }
+  .done ~ .result{ display:block; }
+  .result-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; border-bottom:1px solid #3a3c33;
+    font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  }
+  .status-ok{ color:#a8d18a; display:flex; align-items:center; gap:6px; }
+  .status-ok::before{ content:"●"; font-size:9px; }
+  .result-body{ padding:20px 18px 22px; }
+  .result-text{
+    font-family:var(--mono); font-size:15px; line-height:1.55;
+    word-break:break-all; white-space:pre-wrap; margin:0 0 16px;
+  }
+  .result-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.03em; padding:9px 14px;
+    background:transparent; color:var(--paper); border:1px solid #5b5d51; cursor:pointer;
+    text-decoration:none; transition:background .12s, border-color .12s;
+  }
+  .btn:hover{ border-color:var(--paper); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ background:#365a36; }
+
+  footer{
+    margin-top:26px; background:var(--panel); border:1.5px solid var(--ink); border-radius:14px;
+    padding:12px 18px; font-size:12px; color:#7c7e70; font-family:var(--mono);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;
+  }
+  footer .credit{ color:var(--ink); }
+  footer a{ color:var(--accent); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  @media (max-width:480px){
+    h1{ font-size:26px; }
+    header{ padding:18px; }
+    .field{ flex-direction:column; }
+    .stage{ padding:40px 16px; }
+    footer{ flex-direction:column; align-items:flex-start; }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
   <header>
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm8-2h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h2v4h-2v-4zm4 2h4v2h-4v-2zm2-4h2v2h-2v-2z"/></svg>
-    QRmaker
+    <div class="eyebrow">QR make</div>
+    <h1>QR 메이커</h1>
+    <p>주소나 글을 입력하고 "만들기"를 누르면 QR 코드가 바로 만들어집니다.<br>입력창에서 <kbd>Enter</kbd>를 눌러도 됩니다. 만든 QR은 PNG로 저장할 수 있습니다.</p>
   </header>
-  <main>
-    <div class="card">
-      <section>
-        <h1>QR 코드 만들기</h1>
-        <p class="desc">주소나 글을 입력하면 QR 코드가 만들어집니다.</p>
-        <label for="text">내용</label>
+
+  <div class="zone" id="zone">
+    <div class="input-row">
+      <label for="text">내용</label>
+      <div class="field">
         <input id="text" placeholder="https://example.com" autocomplete="off">
-        <div class="actions">
-          <button class="btn btn-primary" id="make">만들기</button>
-          <a class="btn btn-secondary" id="download" download="qrcode.png" hidden>PNG 저장</a>
-        </div>
-      </section>
-      <div class="preview" id="qr">미리보기가 여기에 표시됩니다</div>
+        <button type="button" class="action-btn" id="make">▦ 만들기</button>
+      </div>
     </div>
-    <footer>입력한 내용은 서버로 전송되지 않습니다.</footer>
-  </main>
+    <div class="stage">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div id="empty">
+        <div class="zone-icon">
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+        </div>
+        <div class="zone-title">QR 미리보기</div>
+        <div class="zone-sub">내용을 입력하면 여기에 QR 코드가 나타납니다</div>
+      </div>
+      <div id="qr"></div>
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="result-head">
+      <span class="status-ok">생성 완료</span>
+      <span>PNG · 512px</span>
+    </div>
+    <div class="result-body">
+      <p class="result-text" id="resultText"></p>
+      <div class="result-actions">
+        <a class="btn primary" id="download" download="qrcode.png">PNG 저장</a>
+        <button class="btn" id="resetBtn">다시 시작</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>브라우저 안에서만 처리 · 서버 전송 없음</span>
+    <span class="credit">Made by <a href="mailto:uzzin501@gmail.com">uzzin501@gmail.com</a></span>
+  </footer>
+</div>
+
 <script>
+  const zone = document.getElementById('zone');
   const input = document.getElementById('text');
   const qrEl = document.getElementById('qr');
   const dl = document.getElementById('download');
-  function make() {
+  const resultText = document.getElementById('resultText');
+
+  function make(){
     const text = input.value.trim();
     if (!text) { input.focus(); return; }
     qrEl.innerHTML = '';
     new QRCode(qrEl, { text, width: 512, height: 512 });
     dl.href = qrEl.querySelector('canvas').toDataURL('image/png');
-    dl.hidden = false;
+    resultText.textContent = text;
+    zone.classList.add('done');
   }
+
   document.getElementById('make').onclick = make;
   input.addEventListener('keydown', e => { if (e.key === 'Enter') make(); });
+  document.getElementById('resetBtn').onclick = () => {
+    zone.classList.remove('done');
+    input.value = '';
+    input.focus();
+  };
 </script>
 </body>
 </html>
