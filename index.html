@@ -9,7 +9,7 @@
 <style>
   :root{
     --ink:#16171d;
-    --paper:#f4f1ea;
+    --paper:#e6ebf5;
     --panel:#ffffff;
     --accent:#2f4fd8;
     --accent-dark:#2238a8;
@@ -24,7 +24,7 @@
     min-height:100vh; display:flex; flex-direction:column; align-items:center;
     padding:56px 20px 40px;
     background-color:var(--paper);
-    background-image:radial-gradient(#c9c4b6 1.2px, transparent 1.2px);
+    background-image:radial-gradient(#aab6d3 1.2px, transparent 1.2px);
     background-size:20px 20px;
   }
 
@@ -53,7 +53,7 @@
   textarea{
     width:100%; height:96px; resize:vertical;
     font-family:var(--mono); font-size:14px; line-height:1.5; color:var(--ink);
-    border:2px solid var(--ink); border-radius:4px; background:#fbfaf7; padding:12px 14px; outline:none;
+    border:2px solid var(--ink); border-radius:4px; background:#f7f8fc; padding:12px 14px; outline:none;
   }
   textarea:focus{ border-color:var(--accent); background:#fff; box-shadow:0 0 0 4px rgba(47,79,216,.15); }
 
@@ -73,7 +73,7 @@
 
   /* 오른쪽: QR 라벨 */
   .right{
-    padding:36px 28px; background:#f9f8f4;
+    padding:36px 28px; background:#f4f6fb;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
   }
   .label{
@@ -87,16 +87,16 @@
     letter-spacing:0.12em; color:var(--muted); margin-bottom:12px;
   }
   .slot{
-    aspect-ratio:1; border:2px dashed #c9c4b6; border-radius:2px;
+    aspect-ratio:1; border:2px dashed #c3cbe0; border-radius:2px;
     display:flex; align-items:center; justify-content:center; text-align:center;
-    color:#a6a294; font-size:13px; line-height:1.5; padding:12px;
+    color:#98a2bd; font-size:13px; line-height:1.5; padding:12px;
   }
   #qr{ display:none; }
   #qr img, #qr canvas{ width:100%; height:auto; display:block; }
   .done .slot{ display:none; }
   .done #qr{ display:block; }
   .caption{
-    margin-top:12px; padding-top:10px; border-top:2px dotted #c9c4b6;
+    margin-top:12px; padding-top:10px; border-top:2px dotted #c3cbe0;
     font-family:var(--mono); font-size:11px; color:var(--muted);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
