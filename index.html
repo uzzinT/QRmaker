@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QRmaker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; text-align: center; }
+  input { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
+  button { margin-top: 12px; padding: 10px 20px; font-size: 16px; }
+  #qr { margin: 24px auto; display: inline-block; }
+</style>
+</head>
+<body>
+  <h1>QRmaker</h1>
+  <label for="text">QR로 만들 주소나 글</label>
+  <input id="text" placeholder="https://example.com">
+  <button id="make">만들기</button>
+  <div id="qr"></div>
+  <div><a id="download" download="qrcode.png" hidden>PNG 저장</a></div>
+<script>
+  const qrEl = document.getElementById('qr');
+  const dl = document.getElementById('download');
+  document.getElementById('make').onclick = () => {
+    const text = document.getElementById('text').value.trim();
+    if (!text) return;
+    qrEl.innerHTML = '';
+    new QRCode(qrEl, { text, width: 256, height: 256 });
+    dl.href = qrEl.querySelector('canvas').toDataURL('image/png');
+    dl.hidden = false;
+  };
+</script>
+</body>
+</html>
