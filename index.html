@@ -6,30 +6,93 @@
 <title>QRmaker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; text-align: center; }
-  input { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
-  button { margin-top: 12px; padding: 10px 20px; font-size: 16px; }
-  #qr { margin: 24px auto; display: inline-block; }
+  :root {
+    --brand: #0f6cbd; --brand-hover: #115ea3; --brand-press: #0c3b5e;
+    --bg: #f5f5f5; --card: #ffffff; --text: #242424; --sub: #616161;
+    --stroke: #d1d1d1; --stroke-strong: #616161;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif; font-size: 14px;
+  }
+  header {
+    height: 48px; background: var(--brand); color: #fff;
+    display: flex; align-items: center; gap: 10px; padding: 0 20px;
+    font-size: 16px; font-weight: 600;
+  }
+  header svg { width: 20px; height: 20px; }
+  main { max-width: 760px; margin: 32px auto; padding: 0 16px; }
+  .card {
+    background: var(--card); border-radius: 8px; padding: 24px;
+    box-shadow: 0 0 2px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.14);
+    display: grid; grid-template-columns: 1fr 280px; gap: 32px;
+  }
+  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
+  .desc { margin: 0 0 20px; color: var(--sub); }
+  label { display: block; font-weight: 600; margin-bottom: 6px; }
+  input {
+    width: 100%; height: 32px; padding: 0 10px; font: inherit; color: inherit;
+    border: 1px solid var(--stroke); border-bottom-color: var(--stroke-strong); border-radius: 4px;
+    outline: none;
+  }
+  input:focus { border-bottom: 2px solid var(--brand); }
+  .actions { display: flex; gap: 8px; margin-top: 16px; }
+  .btn {
+    height: 32px; padding: 0 16px; border-radius: 4px; font: inherit; font-weight: 600;
+    display: inline-flex; align-items: center; cursor: pointer; text-decoration: none;
+  }
+  .btn-primary { background: var(--brand); color: #fff; border: 1px solid transparent; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-primary:active { background: var(--brand-press); }
+  .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--stroke); }
+  .btn-secondary:hover { background: #f5f5f5; border-color: #c7c7c7; }
+  .btn[hidden] { display: none; }
+  .preview {
+    border: 1px solid #e0e0e0; border-radius: 4px; background: #fafafa;
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    color: #9e9e9e; text-align: center; padding: 16px;
+  }
+  #qr img, #qr canvas { width: 100%; height: auto; display: block; }
+  footer { text-align: center; color: var(--sub); font-size: 12px; margin-top: 16px; }
+  @media (max-width: 600px) { .card { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-  <h1>QRmaker</h1>
-  <label for="text">QR로 만들 주소나 글</label>
-  <input id="text" placeholder="https://example.com">
-  <button id="make">만들기</button>
-  <div id="qr"></div>
-  <div><a id="download" download="qrcode.png" hidden>PNG 저장</a></div>
+  <header>
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm8-2h2v2h-2v-2zm4 0h4v2h-4v-2zm-4 4h2v4h-2v-4zm4 2h4v2h-4v-2zm2-4h2v2h-2v-2z"/></svg>
+    QRmaker
+  </header>
+  <main>
+    <div class="card">
+      <section>
+        <h1>QR 코드 만들기</h1>
+        <p class="desc">주소나 글을 입력하면 QR 코드가 만들어집니다.</p>
+        <label for="text">내용</label>
+        <input id="text" placeholder="https://example.com" autocomplete="off">
+        <div class="actions">
+          <button class="btn btn-primary" id="make">만들기</button>
+          <a class="btn btn-secondary" id="download" download="qrcode.png" hidden>PNG 저장</a>
+        </div>
+      </section>
+      <div class="preview" id="qr">미리보기가 여기에 표시됩니다</div>
+    </div>
+    <footer>입력한 내용은 서버로 전송되지 않습니다.</footer>
+  </main>
 <script>
+  const input = document.getElementById('text');
   const qrEl = document.getElementById('qr');
   const dl = document.getElementById('download');
-  document.getElementById('make').onclick = () => {
-    const text = document.getElementById('text').value.trim();
-    if (!text) return;
+  function make() {
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
     qrEl.innerHTML = '';
-    new QRCode(qrEl, { text, width: 256, height: 256 });
+    new QRCode(qrEl, { text, width: 512, height: 512 });
     dl.href = qrEl.querySelector('canvas').toDataURL('image/png');
     dl.hidden = false;
-  };
+  }
+  document.getElementById('make').onclick = make;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') make(); });
 </script>
 </body>
 </html>
